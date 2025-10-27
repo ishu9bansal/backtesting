@@ -23,7 +23,7 @@ export const backtestSchema = z.object({
 
         exit: z.object({
             time: z.string().min(1).describe("Exit time for positions in HH:MM format (e.g., '15:00')"),
-            movement: z.coerce.number().optional().describe("Optional profit/loss threshold for early exit (e.g., 100)"),
+            movement: z.coerce.number().optional().describe("Upon how many points of market movement should we do a readjustment by exiting the current position and taking a new one at new ATM (e.g., 100)"),
         }).describe("Position exit configuration"),
 
         focus: z.object({
