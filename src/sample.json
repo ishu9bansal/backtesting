@@ -1,0 +1,40 @@
+{
+    "start_date": "2022-06-01",
+    "end_date": "2022-06-09",
+    "capital": 100000,
+    "lot_size": 50,
+    "position": {
+        "per_day_positions_threshold": 5,
+        "entry": {
+            "time": "09:17"
+        },
+        "exit": {
+            "time": "15:00",
+            "movement": 100
+        },
+        "focus": {
+            "symbol": "NIFTY",
+            "step": 50,
+            "expiry": {
+                "weekday": 3,
+                "frequency": "WEEKLY"
+            }
+        },
+        "legs": [
+            {
+                "strike": {
+                    "offset": 0
+                },
+                "type": "CE",
+                "transaction": "SELL"
+            },
+            {
+                "strike": {
+                    "offset": 0
+                },
+                "type": "PE",
+                "transaction": "SELL"
+            }
+        ]
+    }
+}
