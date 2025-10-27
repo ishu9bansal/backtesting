@@ -37,12 +37,6 @@ async function makeBacktestRequest(strategy: BacktestFormData): Promise<Backtest
     }
 }
 
-const BacktestParamsSchema = {
-    symbol: z.string().describe("The stock symbol to backtest."),
-    start_date: z.string().describe("The start date for the backtest in YYYY-MM-DD format."),
-    end_date: z.string().describe("The end date for the backtest in YYYY-MM-DD format."),
-};
-
 function formatMessage(text: string): CallToolResult {
     return {
         content: [
