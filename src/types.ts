@@ -74,4 +74,5 @@ export type RawOrder = {
 export type BacktestResult = {
     data: RawOrder[];
     initial_capital: number;
+    error?: string;
 };
