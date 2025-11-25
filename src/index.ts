@@ -85,6 +85,10 @@ async function init_http_transport() {
     const app = express();
     app.use(express.json());
 
+    app.get('/', (req, res) => {
+        res.send('Backtesting MCP Server is running. Use the /mcp endpoint for MCP requests.');
+    });
+
     app.post('/mcp', async (req, res) => {
         // Create a new transport for each request to prevent request ID collisions
         const transport = new StreamableHTTPServerTransport({
