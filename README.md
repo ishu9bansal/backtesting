@@ -61,7 +61,7 @@ npm run start:http
 Or with custom port:
 
 ```bash
-PORT=8080 node build/index.js --http
+USE_HTTP=true PORT=8080 node build/index.js
 ```
 
 ### Testing with MCP Inspector

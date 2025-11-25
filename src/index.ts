@@ -108,12 +108,12 @@ async function init_http_transport() {
     });
 }
 
-async function main(args?: string[]) {
+async function main() {
     const isDev = process.env.NODE_ENV === 'development';
     if (isDev) {
         console.log("Running in development mode");
     }
-    const useHttp = args?.includes('--http') || process.env.USE_HTTP === 'true' || isDev;
+    const useHttp = process.env.USE_HTTP === 'true' || isDev;
     if (useHttp) {
         await init_http_transport();
     } else {

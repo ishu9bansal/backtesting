@@ -8,7 +8,7 @@
     "dev": "NODE_ENV=development tsx src/index.ts",
     "dev:watch": "NODE_ENV=development nodemon --exec tsx src/index.ts",
     "start": "node build/index.js",
-    "start:http": "node build/index.js --http",
+    "start:http": "USE_HTTP=true node build/index.js",
     "inspector": "npx @modelcontextprotocol/inspector node build/index.js"
   },
   "keywords": [],
