@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { type BacktestFormData, BacktestResult, backtestSchema } from "./types.js";
 import { type CallToolResult } from "@modelcontextprotocol/sdk/types.js";
+import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
+import express from 'express';
 
 const BACKTEST_API_BASE = "https://ej5u3yy5de.execute-api.us-east-1.amazonaws.com";
 const USER_AGENT = "backtest-app/1.0";
@@ -72,10 +74,51 @@ server.tool(
     },
 );
 
-async function main() {
+async function init_stdio_transport() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("Backtesting MCP Server running on stdio");
+}
+
+async function init_http_transport() {
+    // Set up Express and HTTP transport
+    const app = express();
+    app.use(express.json());
+
+    app.post('/mcp', async (req, res) => {
+        // Create a new transport for each request to prevent request ID collisions
+        const transport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: undefined,
+            enableJsonResponse: true
+        });
+
+        res.on('close', () => {
+            transport.close();
+        });
+
+        await server.connect(transport);
+        await transport.handleRequest(req, res, req.body);
+    });
+
+    const port = parseInt(process.env.PORT || '3000');
+    app.listen(port, () => {
+        console.log(`Demo MCP Server running on http://localhost:${port}/mcp`);
+    }).on('error', error => {
+        throw error;
+    });
+}
+
+async function main() {
+    const isDev = process.env.NODE_ENV === 'development';
+    if (isDev) {
+        console.log("Running in development mode");
+    }
+    const useHttp = process.env.USE_HTTP === 'true' || isDev;
+    if (useHttp) {
+        await init_http_transport();
+    } else {
+        await init_stdio_transport();
+    }
 }
 
 main().catch((error) => {
