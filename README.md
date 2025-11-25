@@ -140,3 +140,6 @@ This will:
 2. The server will automatically restart (if using `dev:watch`)
 3. Test your changes using HTTP requests or the MCP Inspector
 4. Build for production with `npm run build`
+
+### Deployed at
+https://backtesting-gamma.vercel.app/
