@@ -12,10 +12,6 @@ const USER_AGENT = "backtest-app/1.0";
 const server = new McpServer({
   name: "backtest-options-market",
   version: "1.0.0",
-  capabilities: {
-    resources: {},
-    tools: {},
-  },
 });
 
 async function makeBacktestRequest(strategy: BacktestFormData): Promise<BacktestResult | null> {
