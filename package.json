@@ -22,7 +22,9 @@
     "build"
   ],
   "dependencies": {
+    "@clerk/mcp-tools": "^0.3.1",
     "@modelcontextprotocol/sdk": "^1.20.2",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "zod": "^3.25.76"
   },
