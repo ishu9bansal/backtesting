@@ -1,9 +1,13 @@
+import 'dotenv/config';
+import { type MachineAuthObject, clerkClient, clerkMiddleware } from '@clerk/express'
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { type BacktestFormData, BacktestResult, backtestSchema } from "./types.js";
 import { type CallToolResult } from "@modelcontextprotocol/sdk/types.js";
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import express from 'express';
+import cors from 'cors'
+import { authServerMetadataHandlerClerk, mcpAuthClerk, protectedResourceHandlerClerk } from '@clerk/mcp-tools/express';
 
 const BACKTEST_API_BASE = "https://ej5u3yy5de.execute-api.us-east-1.amazonaws.com";
 const USER_AGENT = "backtest-app/1.0";
@@ -49,7 +53,10 @@ server.tool(
     "run_backtest",
     "Run a backtest on historical options data on a given stock symbol and date range.",
     backtestSchema.shape,
-    async (params: BacktestFormData, context) => {
+    async (params: BacktestFormData, { authInfo }) => {
+        const userId = authInfo!.extra!.userId! as string;
+        const userData = await clerkClient.users.getUser(userId);
+        console.log(`Backtest requested by user: ${userData.primaryEmailAddress?.emailAddress} (ID: ${userId})`);
         const results = await makeBacktestRequest(params);
         if(!results) {
             return formatMessage("Failed to retrieve backtest results.");
@@ -79,13 +86,15 @@ async function init_stdio_transport() {
 async function init_http_transport() {
     // Set up Express and HTTP transport
     const app = express();
+    app.use(cors({ exposedHeaders: ['WWW-Authenticate'] }));
+    app.use(clerkMiddleware());
     app.use(express.json());
-
+    
     app.get('/', (req, res) => {
         res.send('Backtesting MCP Server is running. Use the /mcp endpoint for MCP requests.');
     });
 
-    app.post('/mcp', async (req, res) => {
+    app.post('/mcp', mcpAuthClerk, async (req, res) => {
         // Create a new transport for each request to prevent request ID collisions
         const transport = new StreamableHTTPServerTransport({
             sessionIdGenerator: undefined,
@@ -99,6 +108,13 @@ async function init_http_transport() {
         await server.connect(transport);
         await transport.handleRequest(req, res, req.body);
     });
+    app.get(
+        '/.well-known/oauth-protected-resource/mcp',
+        protectedResourceHandlerClerk({ scopes_supported: ['email', 'profile'] }),
+    )
+    app.get('/.well-known/oauth-authorization-server', authServerMetadataHandlerClerk)
+
+
 
     const port = parseInt(process.env.PORT || '3000');
     app.listen(port, () => {
