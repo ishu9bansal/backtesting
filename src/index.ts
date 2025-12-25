@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { type MachineAuthObject, clerkClient, clerkMiddleware } from '@clerk/express'
+import { clerkClient, clerkMiddleware } from '@clerk/express'
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { type BacktestFormData, BacktestResult, backtestSchema } from "./types.js";
